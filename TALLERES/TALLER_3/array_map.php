@@ -1,3 +1,4 @@
+
 <?php
 // Ejemplo básico de array_map()
 $numeros = [1, 2, 3, 4, 5];
@@ -24,8 +25,8 @@ echo "</br>Frutas originales: " . implode(", ", $frutas) . "</br>";
 echo "Frutas en mayúsculas: " . implode(", ", $frutasMayusculas) . "</br>";
 
 // Bonus: Usar array_map() con múltiples arrays
-$nombres = ["Ana", "Carlos", "Beatriz", "Jeremy"];
-$apellidos = ["García", "Rodríguez", "López", "Lamas"];
+$nombres = ["Ana", "Carlos", "Beatriz"];
+$apellidos = ["García", "Rodríguez", "López"];
 $nombresCompletos = array_map(function($nombre, $apellido) {
     return $nombre . " " . $apellido;
 }, $nombres, $apellidos);
@@ -77,3 +78,4 @@ foreach ($valores as $index => $valor) {
 }
 ?>
       
+
