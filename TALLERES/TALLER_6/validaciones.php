@@ -47,4 +47,9 @@ function validarFotoPerfil($archivo) {
 
     return true;
 }
+
+function validarFecha_nacimiento($fecha) {
+    $timestamp = strtotime($fecha);
+    return $timestamp !== false && $timestamp <= time();
+}
 ?>

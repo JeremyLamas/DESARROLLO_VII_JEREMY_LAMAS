@@ -6,8 +6,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $errores = [];
     $datos = [];
 
-    // Procesar y validar cada campo
-    $campos = ['nombre', 'email', 'edad', 'sitio_web', 'genero', 'intereses', 'comentarios'];
+    $campos = ['nombre', 'email', 'sitio_web', 'genero', 'intereses', 'comentarios', 'fecha_nacimiento'];
     foreach ($campos as $campo) {
         if (isset($_POST[$campo])) {
             $valor = $_POST[$campo];
@@ -20,12 +19,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         }
     }
 
-    // Procesar la foto de perfil
+    $fechaNacimiento = $datos['fecha_nacimiento'];
+    $edad = date_diff(date_create($fechaNacimiento), date_create('today'))->y;
+    $datos['edad'] = $edad;
+
     if (isset($_FILES['foto_perfil']) && $_FILES['foto_perfil']['error'] !== UPLOAD_ERR_NO_FILE) {
         if (!validarFotoPerfil($_FILES['foto_perfil'])) {
             $errores[] = "La foto de perfil no es válida.";
         } else {
-            $rutaDestino = 'uploads/' . basename($_FILES['foto_perfil']['name']);
+            $rutaDestino = 'uploads/' . uniqid() . '_' . basename($_FILES['foto_perfil']['name']);
             if (move_uploaded_file($_FILES['foto_perfil']['tmp_name'], $rutaDestino)) {
                 $datos['foto_perfil'] = $rutaDestino;
             } else {
@@ -34,24 +36,41 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         }
     }
 
-    // Mostrar resultados o errores
+    if (empty($errores)) {
+        $registros = [];
+        if (file_exists('registros.json')) {
+            $registros = json_decode(file_get_contents('registros.json'), true);
+        }
+        $registros[] = $datos;
+        file_put_contents('registros.json', json_encode($registros, JSON_PRETTY_PRINT));
+    }
+
     if (empty($errores)) {
         echo "<h2>Datos Recibidos:</h2>";
+        echo "<table border='1'>";
         foreach ($datos as $campo => $valor) {
+            echo "<tr>";
+            echo "<th>" . ucfirst($campo) . "</th>";
             if ($campo === 'intereses') {
-                echo "$campo: " . implode(", ", $valor) . "<br>";
+                echo "<td>" . implode(", ", $valor) . "</td>";
             } elseif ($campo === 'foto_perfil') {
-                echo "$campo: <img src='$valor' width='100'><br>";
+                echo "<td><img src='$valor' width='100'></td>";
             } else {
-                echo "$campo: $valor<br>";
+                echo "<td>$valor</td>";
             }
+            echo "</tr>";
         }
+        echo "</table>";
     } else {
         echo "<h2>Errores:</h2>";
+        echo "<ul>";
         foreach ($errores as $error) {
-            echo "$error<br>";
+            echo "<li>$error</li>";
         }
+        echo "</ul>";
     }
+
+    echo "<br><a href='formulario.html'>Volver al formulario</a>";
 } else {
     echo "Acceso no permitido.";
 }
