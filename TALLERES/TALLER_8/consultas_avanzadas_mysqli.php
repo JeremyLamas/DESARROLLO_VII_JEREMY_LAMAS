@@ -54,6 +54,11 @@ if ($result) {
     mysqli_free_result($result);
 } else {
     echo "Error: " . mysqli_error($conn);
+
+if (!$result) {
+    throw new Exception("Error en la consulta: " . mysqli_error($conn));
+}
+
 }
 
 mysqli_close($conn);

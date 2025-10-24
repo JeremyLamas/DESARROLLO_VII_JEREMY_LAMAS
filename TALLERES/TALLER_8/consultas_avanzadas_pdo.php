@@ -44,6 +44,12 @@ try {
 
 } catch(PDOException $e) {
     echo "Error: " . $e->getMessage();
+
+$stmt->execute();
+if ($stmt->errorCode() !== '00000') {
+    throw new Exception("Error en la consulta: " . $stmt->errorInfo()[2]);
+}
+
 }
 
 $pdo = null;
